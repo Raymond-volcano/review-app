@@ -1,0 +1,21 @@
+{
+  "name": "review-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:customer": "cd customer && npm install",
+    "install:admin": "cd admin && npm install",
+    "build:customer": "cd customer && npm run build",
+    "build:admin": "cd admin && npm run build",
+    "build": "npm run build:customer && npm run build:admin",
+    "start": "node server.js",
+    "start:all": "npm install && cd customer && npm install && npm run build && cd ../admin && npm install && npm run build && cd .. && node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "express": "^4.21.0",
+    "multer": "^1.4.5-lts.1",
+    "qrcode": "^1.5.4",
+    "uuid": "^10.0.0"
+  }
+}

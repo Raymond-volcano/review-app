@@ -1,0 +1,8 @@
+node_modules/
+customer/node_modules/
+admin/node_modules/
+data/
+public/
+.env
+*.db
+.DS_Store
