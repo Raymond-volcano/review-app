@@ -5,8 +5,8 @@
   "scripts": {
     "install:customer": "cd customer && npm install",
     "install:admin": "cd admin && npm install",
-    "build:customer": "cd customer && npm run build",
-    "build:admin": "cd admin && npm run build",
+    "build:customer": "cd customer && npm install --include=dev && npm run build",
+    "build:admin": "cd admin && npm install --include=dev && npm run build",
     "build": "npm run build:customer && npm run build:admin",
     "start": "node server.js",
     "start:all": "npm install && cd customer && npm install && npm run build && cd ../admin && npm install && npm run build && cd .. && node server.js"
