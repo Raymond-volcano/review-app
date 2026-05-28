@@ -4,8 +4,17 @@ import { logEvent, getStoreId } from '../api'
 export default function Confirm({ store, selectedImages, selectedCopy, nextStep, prevStep, storeId }) {
   const [copied, setCopied] = useState(false)
   const [copying, setCopying] = useState(false)
+  const [showWechatGuide, setShowWechatGuide] = useState(null) // null | { url, name }
 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  const isWechat = /MicroMessenger/i.test(navigator.userAgent)
+
+  const handlePlatformClick = (url, name) => {
+    if (isWechat) {
+      setShowWechatGuide({ url, name })
+    } else {
+      window.open(url, '_blank')
+    }
+  }
 
   const handleCopy = async () => {
     if (!selectedCopy || selectedImages.length === 0) return
@@ -129,29 +138,85 @@ export default function Confirm({ store, selectedImages, selectedCopy, nextStep,
               <h3 className="font-bold text-gray-800 text-sm mb-2">🚀 一键跳转去写评价</h3>
               <div className="flex gap-2">
                 {store?.dianping_id && (
-                  <a
-                    href={`https://www.dianping.com/shop/${store.dianping_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => handlePlatformClick(`https://www.dianping.com/shop/${store.dianping_id}`, '大众点评')}
                     className="flex-1 py-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center active:scale-95 transition-transform"
                   >
                     <span className="text-lg block mb-0.5">⭐</span>
                     <span className="text-xs font-medium text-yellow-700">大众点评</span>
-                  </a>
+                  </button>
                 )}
                 {store?.meituan_id && (
-                  <a
-                    href={`https://www.meituan.com/shop/${store.meituan_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => handlePlatformClick(`https://www.meituan.com/shop/${store.meituan_id}`, '美团')}
                     className="flex-1 py-3 bg-green-50 border border-green-200 rounded-xl text-center active:scale-95 transition-transform"
                   >
                     <span className="text-lg block mb-0.5">🛵</span>
                     <span className="text-xs font-medium text-green-700">美团</span>
-                  </a>
+                  </button>
                 )}
               </div>
-              <p className="text-[10px] text-gray-400 text-center mt-1.5">点击后自动跳转 App（未安装则打开网页）</p>
+              {isWechat && (
+                <p className="text-[10px] text-orange-500 text-center mt-1.5">💡 微信内无法跳转 App，点击后查看解决办法</p>
+              )}
+              {!isWechat && (
+                <p className="text-[10px] text-gray-400 text-center mt-1.5">点击后自动跳转 App（未安装则打开网页）</p>
+              )}
+            </div>
+          )}
+
+          {/* WeChat guidance modal */}
+          {showWechatGuide && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={() => setShowWechatGuide(null)}>
+              <div className="bg-white w-full max-w-lg rounded-t-3xl p-6 pb-10" onClick={e => e.stopPropagation()}>
+                <div className="text-center mb-4">
+                  <div className="text-4xl mb-3">🔗</div>
+                  <h3 className="text-lg font-bold text-gray-800">打开 {showWechatGuide.name}</h3>
+                  <p className="text-sm text-gray-500 mt-1">微信内无法直接跳转 App，请按以下步骤操作：</p>
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+                    <span className="w-7 h-7 bg-purple-200 rounded-full flex items-center justify-center text-sm font-bold text-purple-600 flex-shrink-0">1</span>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-gray-800">点击右上角 <strong>「···」</strong></p>
+                      <p className="text-xs text-gray-400 mt-0.5">在微信浏览器底部或顶部找到更多菜单</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+                    <span className="w-7 h-7 bg-purple-200 rounded-full flex items-center justify-center text-sm font-bold text-purple-600 flex-shrink-0">2</span>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-gray-800">选择 <strong>「在浏览器中打开」</strong></p>
+                      <p className="text-xs text-gray-400 mt-0.5">用 Safari 或 Chrome 打开本页面</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+                    <span className="w-7 h-7 bg-purple-200 rounded-full flex items-center justify-center text-sm font-bold text-purple-600 flex-shrink-0">3</span>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-gray-800">再次点击 <strong>「{showWechatGuide.name}」</strong> 按钮</p>
+                      <p className="text-xs text-gray-400 mt-0.5">浏览器中可以直接跳转 App</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowWechatGuide(null)}
+                    className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-medium text-sm"
+                  >
+                    知道了
+                  </button>
+                  <a
+                    href={showWechatGuide.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-3 bg-purple-500 text-white rounded-xl font-medium text-sm text-center block"
+                    onClick={() => setShowWechatGuide(null)}
+                  >
+                    先打开网页
+                  </a>
+                </div>
+              </div>
             </div>
           )}
 
