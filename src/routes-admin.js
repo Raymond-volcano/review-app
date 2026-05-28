@@ -107,7 +107,7 @@ router.get('/stats', (req, res) => {
 // QR Code
 router.get('/qrcode', async (req, res) => {
   try {
-    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+    const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
     const url = `${baseUrl}/?store=${req.storeId}`;
     const svg = await generateQR(url);
     const store = db.getStore(req.storeId);
