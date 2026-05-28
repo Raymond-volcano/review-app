@@ -90,7 +90,38 @@ export default function Confirm({ selectedImages, selectedCopy, nextStep, prevSt
             </svg>
           </div>
           <p className="text-green-600 font-bold text-lg mb-2">✅ 复制成功！</p>
-          <p className="text-gray-500 text-sm mb-4">文案已复制到剪贴板</p>
+          <p className="text-gray-500 text-sm mb-2">文案已复制到剪贴板</p>
+
+          {/* Image download section */}
+          <div className="mb-4 mt-2">
+            <h3 className="font-bold text-gray-800 text-sm mb-1">🖼️ 保存图片到相册</h3>
+            <p className="text-gray-400 text-xs mb-3">点击图片打开原图 → 长按选择「保存到相册」</p>
+
+            <div className="grid grid-cols-2 gap-2">
+              {selectedImages.map(img => (
+                <a
+                  key={img.id}
+                  href={img.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative rounded-xl overflow-hidden bg-gray-100 block active:scale-95 transition-transform"
+                >
+                  <img src={img.url} alt={img.label} className="w-full aspect-square object-cover" loading="lazy" />
+                  {img.label && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1.5">
+                      <span className="text-white text-[10px] leading-tight block truncate">{img.label}</span>
+                    </div>
+                  )}
+                  {/* Download badge */}
+                  <div className="absolute top-1.5 right-1.5 w-7 h-7 bg-white/90 rounded-full flex items-center justify-center shadow">
+                    <svg className="w-3.5 h-3.5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
 
           {/* Guidance */}
           <div className="bg-purple-50 rounded-2xl p-4 mb-4 text-left">
@@ -98,19 +129,19 @@ export default function Confirm({ selectedImages, selectedCopy, nextStep, prevSt
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 flex-shrink-0">1</span>
-                <span>打开 <strong>大众点评</strong> 或 <strong>美团</strong></span>
+                <span>点击上方图片 <strong>下载/保存</strong> 到手机相册</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 flex-shrink-0">2</span>
-                <span>搜索并进入「美宝月子中心」</span>
+                <span>打开 <strong>小红书 / 大众点评 / 美团</strong></span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 flex-shrink-0">3</span>
-                <span>粘贴文案，选择相册中的图片</span>
+                <span>进入店铺页面，点击「写评价」</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 flex-shrink-0">4</span>
-                <span>点击「发布」完成评价 🎉</span>
+                <span>从相册选图，粘贴文案，发布 🎉</span>
               </div>
             </div>
           </div>
