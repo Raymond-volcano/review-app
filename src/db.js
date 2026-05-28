@@ -21,6 +21,8 @@ function initDB() {
       password TEXT NOT NULL DEFAULT '123456',
       welcome_text TEXT DEFAULT '欢迎光临！',
       logo TEXT,
+      dianping_id TEXT DEFAULT '',
+      meituan_id TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now'))
     );
 
@@ -164,13 +166,13 @@ function seedDemoStore() {
 
 // ====== Store ======
 function getStore(id) {
-  return db.prepare('SELECT id, name, welcome_text, logo, created_at FROM stores WHERE id = ?').get(id);
+  return db.prepare('SELECT id, name, welcome_text, logo, dianping_id, meituan_id, created_at FROM stores WHERE id = ?').get(id);
 }
 
 function updateStore(id, data) {
-  const { name, welcome_text, phone } = data;
-  db.prepare('UPDATE stores SET name = COALESCE(?, name), welcome_text = COALESCE(?, welcome_text), phone = COALESCE(?, phone) WHERE id = ?')
-    .run(name || null, welcome_text || null, phone || null, id);
+  const { name, welcome_text, phone, dianping_id, meituan_id } = data;
+  db.prepare('UPDATE stores SET name = COALESCE(?, name), welcome_text = COALESCE(?, welcome_text), phone = COALESCE(?, phone), dianping_id = COALESCE(?, dianping_id), meituan_id = COALESCE(?, meituan_id) WHERE id = ?')
+    .run(name || null, welcome_text || null, phone || null, dianping_id || null, meituan_id || null, id);
 }
 
 // ====== Images ======

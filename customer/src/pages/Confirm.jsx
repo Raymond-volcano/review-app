@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { logEvent, getStoreId } from '../api'
 
-export default function Confirm({ selectedImages, selectedCopy, nextStep, prevStep, storeId }) {
+export default function Confirm({ store, selectedImages, selectedCopy, nextStep, prevStep, storeId }) {
   const [copied, setCopied] = useState(false)
   const [copying, setCopying] = useState(false)
 
@@ -123,6 +123,38 @@ export default function Confirm({ selectedImages, selectedCopy, nextStep, prevSt
             </div>
           </div>
 
+          {/* Platform jump buttons */}
+          {(store?.dianping_id || store?.meituan_id) && (
+            <div className="mb-4">
+              <h3 className="font-bold text-gray-800 text-sm mb-2">🚀 一键跳转去写评价</h3>
+              <div className="flex gap-2">
+                {store?.dianping_id && (
+                  <a
+                    href={`https://www.dianping.com/shop/${store.dianping_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center active:scale-95 transition-transform"
+                  >
+                    <span className="text-lg block mb-0.5">⭐</span>
+                    <span className="text-xs font-medium text-yellow-700">大众点评</span>
+                  </a>
+                )}
+                {store?.meituan_id && (
+                  <a
+                    href={`https://www.meituan.com/shop/${store.meituan_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-3 bg-green-50 border border-green-200 rounded-xl text-center active:scale-95 transition-transform"
+                  >
+                    <span className="text-lg block mb-0.5">🛵</span>
+                    <span className="text-xs font-medium text-green-700">美团</span>
+                  </a>
+                )}
+              </div>
+              <p className="text-[10px] text-gray-400 text-center mt-1.5">点击后自动跳转 App（未安装则打开网页）</p>
+            </div>
+          )}
+
           {/* Guidance */}
           <div className="bg-purple-50 rounded-2xl p-4 mb-4 text-left">
             <p className="font-bold text-gray-800 text-sm mb-3">📝 发布步骤：</p>
@@ -133,15 +165,15 @@ export default function Confirm({ selectedImages, selectedCopy, nextStep, prevSt
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 flex-shrink-0">2</span>
-                <span>打开 <strong>小红书 / 大众点评 / 美团</strong></span>
+                <span>点击上方按钮<strong>跳转 App</strong>，进入店铺页</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 flex-shrink-0">3</span>
-                <span>进入店铺页面，点击「写评价」</span>
+                <span>点击「写评价」，粘贴文案 + 选图</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-600 flex-shrink-0">4</span>
-                <span>从相册选图，粘贴文案，发布 🎉</span>
+                <span>点击「发布」完成评价 🎉</span>
               </div>
             </div>
           </div>

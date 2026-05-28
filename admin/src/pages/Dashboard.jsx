@@ -6,19 +6,23 @@ export default function Dashboard({ onStoreNameChange }) {
   const [stats, setStats] = useState(null)
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState('')
+  const [editDianping, setEditDianping] = useState('')
+  const [editMeituan, setEditMeituan] = useState('')
 
   useEffect(() => {
     getStore().then(data => {
       setStore(data)
       onStoreNameChange(data.name)
       setEditName(data.name)
+      setEditDianping(data.dianping_id || '')
+      setEditMeituan(data.meituan_id || '')
     })
     getStats().then(setStats)
   }, [])
 
   const handleSave = async () => {
-    await updateStore({ name: editName })
-    setStore({ ...store, name: editName })
+    await updateStore({ name: editName, dianping_id: editDianping, meituan_id: editMeituan })
+    setStore({ ...store, name: editName, dianping_id: editDianping, meituan_id: editMeituan })
     onStoreNameChange(editName)
     setEditing(false)
   }
@@ -41,16 +45,31 @@ export default function Dashboard({ onStoreNameChange }) {
           )}
         </div>
         {editing ? (
-          <input
-            type="text"
-            value={editName}
-            onChange={e => setEditName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
-          />
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-500 font-medium">店铺名称</label>
+              <input type="text" value={editName} onChange={e => setEditName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300" />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 font-medium">大众点评店铺 ID</label>
+              <input type="text" value={editDianping} onChange={e => setEditDianping(e.target.value)} placeholder="例：A123456789"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300" />
+              <p className="text-[10px] text-gray-400 mt-1">打开你的大众点评店铺页，URL 中的数字就是 ID</p>
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 font-medium">美团店铺 ID</label>
+              <input type="text" value={editMeituan} onChange={e => setEditMeituan(e.target.value)} placeholder="例：B123456789"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300" />
+              <p className="text-[10px] text-gray-400 mt-1">打开你的美团店铺页，URL 中的数字就是 ID</p>
+            </div>
+          </div>
         ) : (
           <div>
             <p className="text-lg font-bold text-gray-800">{store.name}</p>
             <p className="text-xs text-gray-400 mt-1">ID: {store.id}</p>
+            {store.dianping_id && <p className="text-xs text-gray-400 mt-0.5">大众点评: {store.dianping_id}</p>}
+            {store.meituan_id && <p className="text-xs text-gray-400 mt-0.5">美团: {store.meituan_id}</p>}
           </div>
         )}
       </div>
