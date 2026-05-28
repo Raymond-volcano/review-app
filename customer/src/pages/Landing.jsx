@@ -21,7 +21,7 @@ export default function Landing({ store, images, copies, nextStep }) {
           {images.slice(0, 5).map(img => (
             <img
               key={img.id}
-              src={img.url}
+              src={img.thumbUrl || img.url}
               alt={img.label}
               className="w-16 h-16 rounded-lg object-cover flex-shrink-0 border-2 border-white shadow"
             />

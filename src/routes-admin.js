@@ -52,7 +52,8 @@ router.get('/images', (req, res) => {
   const images = db.getImages(req.storeId);
   res.json(images.map(img => ({
     ...img,
-    url: '/uploads/' + img.filename
+    url: '/uploads/' + img.filename,
+    thumbUrl: '/uploads/thumb_' + img.filename,
   })));
 });
 
@@ -60,29 +61,39 @@ router.post('/images', upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: '请选择图片' });
 
   try {
-    // Compress image: max 1600px, JPEG quality 80%
+    // Compress image + generate thumbnail
     const filePath = req.file.path;
     const ext = path.extname(req.file.filename).toLowerCase();
     const isLossy = ['.jpg', '.jpeg'].includes(ext);
 
-    const compressedPath = filePath.replace(/(\.[^.]+)$/, '_comp$1');
-    await sharp(filePath)
-      .resize(1600, 1600, { fit: 'inside', withoutEnlargement: true })
-      .jpeg({ quality: 80 })
-      .toFile(compressedPath);
+    const uploadDir = path.dirname(filePath);
+    const mainPath = filePath + '_main';
+    const thumbPath = filePath + '_thumb';
 
-    // Swap files
+    await Promise.all([
+      sharp(filePath)
+        .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toFile(mainPath),
+      sharp(filePath)
+        .resize(300, 300, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 65 })
+        .toFile(thumbPath),
+    ]);
+
+    // Clean up original
     fs.unlinkSync(filePath);
     let filename = req.file.filename;
+    let thumbFilename = 'thumb_' + filename;
     if (!isLossy) {
-      // Converted to JPEG from PNG/etc
       filename = filename.replace(/\.[^.]+$/, '.jpg');
+      thumbFilename = thumbFilename.replace(/\.[^.]+$/, '.jpg');
     }
-    const finalPath = path.join(path.dirname(filePath), filename);
-    fs.renameSync(compressedPath, finalPath);
+    fs.renameSync(mainPath, path.join(uploadDir, filename));
+    fs.renameSync(thumbPath, path.join(uploadDir, thumbFilename));
 
     const img = db.addImage(req.storeId, filename, req.body.label || '');
-    res.json({ ...img, url: '/uploads/' + filename });
+    res.json({ ...img, url: '/uploads/' + filename, thumbUrl: '/uploads/thumb_' + filename });
   } catch (err) {
     console.error('Image compression error:', err);
     // Fallback: save uncompressed

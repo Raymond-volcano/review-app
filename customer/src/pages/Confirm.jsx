@@ -56,7 +56,7 @@ export default function Confirm({ selectedImages, selectedCopy, nextStep, prevSt
         {/* Images preview */}
         <div className="grid grid-cols-3 gap-0.5">
           {selectedImages.slice(0, 6).map(img => (
-            <img key={img.id} src={img.url} alt="" className="w-full aspect-square object-cover" />
+            <img key={img.id} src={img.thumbUrl || img.url} alt="" className="w-full aspect-square object-cover" />
           ))}
           {selectedImages.length > 6 && (
             <div className="w-full aspect-square bg-gray-50 flex items-center justify-center text-gray-400 text-sm">
@@ -106,7 +106,7 @@ export default function Confirm({ selectedImages, selectedCopy, nextStep, prevSt
                   rel="noopener noreferrer"
                   className="relative rounded-xl overflow-hidden bg-gray-100 block active:scale-95 transition-transform"
                 >
-                  <img src={img.url} alt={img.label} className="w-full aspect-square object-cover" loading="lazy" />
+                  <img src={img.thumbUrl || img.url} alt={img.label} className="w-full aspect-square object-cover" loading="lazy" />
                   {img.label && (
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1.5">
                       <span className="text-white text-[10px] leading-tight block truncate">{img.label}</span>

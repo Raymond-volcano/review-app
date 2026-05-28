@@ -9,7 +9,8 @@ router.get('/:id', (req, res) => {
 
   const images = db.getImages(req.params.id).map(img => ({
     ...img,
-    url: '/uploads/' + img.filename
+    url: '/uploads/' + img.filename,
+    thumbUrl: '/uploads/thumb_' + img.filename,
   }));
   const copies = db.getCopies(req.params.id);
 
