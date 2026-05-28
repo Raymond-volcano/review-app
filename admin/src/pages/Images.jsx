@@ -90,7 +90,7 @@ export default function Images() {
           {images.map((img, idx) => (
             <div key={img.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="aspect-square relative group">
-                <img src={img.url} alt={img.label} className="w-full h-full object-cover" />
+                <img src={img.thumbUrl || img.url} alt={img.label} className="w-full h-full object-cover" loading="lazy" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                   <button onClick={() => handleDelete(img.id)} className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">✕</button>
                 </div>
