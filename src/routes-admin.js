@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+const sharp = require('sharp');
 const db = require('./db');
 const { generateQR } = require('./qrcode');
 
@@ -54,10 +56,39 @@ router.get('/images', (req, res) => {
   })));
 });
 
-router.post('/images', upload.single('image'), (req, res) => {
+router.post('/images', upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: '请选择图片' });
-  const img = db.addImage(req.storeId, req.file.filename, req.body.label || '');
-  res.json({ ...img, url: '/uploads/' + img.filename });
+
+  try {
+    // Compress image: max 1600px, JPEG quality 80%
+    const filePath = req.file.path;
+    const ext = path.extname(req.file.filename).toLowerCase();
+    const isLossy = ['.jpg', '.jpeg'].includes(ext);
+
+    const compressedPath = filePath.replace(/(\.[^.]+)$/, '_comp$1');
+    await sharp(filePath)
+      .resize(1600, 1600, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 80 })
+      .toFile(compressedPath);
+
+    // Swap files
+    fs.unlinkSync(filePath);
+    let filename = req.file.filename;
+    if (!isLossy) {
+      // Converted to JPEG from PNG/etc
+      filename = filename.replace(/\.[^.]+$/, '.jpg');
+    }
+    const finalPath = path.join(path.dirname(filePath), filename);
+    fs.renameSync(compressedPath, finalPath);
+
+    const img = db.addImage(req.storeId, filename, req.body.label || '');
+    res.json({ ...img, url: '/uploads/' + filename });
+  } catch (err) {
+    console.error('Image compression error:', err);
+    // Fallback: save uncompressed
+    const img = db.addImage(req.storeId, req.file.filename, req.body.label || '');
+    res.json({ ...img, url: '/uploads/' + img.filename });
+  }
 });
 
 router.delete('/images/:id', (req, res) => {
